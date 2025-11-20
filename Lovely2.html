@@ -1,0 +1,555 @@
+<!-- Lovely2 -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy Birthday!</title>
+    
+    <!-- Google Fonts: Elegant Serif & Handwritten Script -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- 1. VARIABLES & THEME SETUP --- */
+        :root {
+            /* Romantic Pastel & Gold Palette */
+            --bg-gradient: linear-gradient(135deg, #fff0f3 0%, #fff5e6 50%, #ffe4e1 100%);
+            --heart-color: rgba(255, 183, 178, 0.4);
+            --primary-gold: #d4af37;
+            --gold-shine: linear-gradient(45deg, #d4af37, #faeab1, #c5a028);
+            --text-dark: #5d4037;
+            --box-color: #ffccbc; /* Soft Peach */
+            --ribbon-color: #ef5350; /* Romantic Red/Pink */
+            
+            /* Fonts */
+            --font-script: 'Great Vibes', cursive;
+            --font-serif: 'Playfair Display', serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Prevent scrolling */
+            background: var(--bg-gradient);
+            background-size: 400% 400%;
+            animation: gradientMove 20s ease infinite;
+            font-family: var(--font-serif);
+            color: var(--text-dark);
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- 2. LOVE BACKGROUND (Floating Hearts) --- */
+        .bg-hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .heart-shape {
+            position: absolute;
+            bottom: -100px;
+            width: 20px;
+            height: 20px;
+            background: var(--heart-color);
+            transform: rotate(45deg);
+            animation: floatUp linear infinite;
+        }
+        
+        .heart-shape::before,
+        .heart-shape::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: inherit;
+            border-radius: 50%;
+        }
+        .heart-shape::before { top: -10px; left: 0; }
+        .heart-shape::after { left: -10px; top: 0; }
+
+        /* Randomize floating hearts */
+        .heart-shape:nth-child(1) { left: 10%; width: 30px; height: 30px; animation-duration: 15s; animation-delay: 0s; opacity: 0.3; }
+        .heart-shape:nth-child(1)::before, .heart-shape:nth-child(1)::after { width: 30px; height: 30px; }
+        
+        .heart-shape:nth-child(2) { left: 30%; width: 15px; height: 15px; animation-duration: 12s; animation-delay: 2s; opacity: 0.5; background: rgba(212, 175, 55, 0.2); }
+        .heart-shape:nth-child(2)::before, .heart-shape:nth-child(2)::after { width: 15px; height: 15px; }
+
+        .heart-shape:nth-child(3) { left: 70%; width: 40px; height: 40px; animation-duration: 20s; animation-delay: 1s; opacity: 0.2; }
+        .heart-shape:nth-child(3)::before, .heart-shape:nth-child(3)::after { width: 40px; height: 40px; }
+
+        .heart-shape:nth-child(4) { left: 50%; width: 25px; height: 25px; animation-duration: 18s; animation-delay: 5s; opacity: 0.4; }
+        .heart-shape:nth-child(4)::before, .heart-shape:nth-child(4)::after { width: 25px; height: 25px; }
+
+        .heart-shape:nth-child(5) { left: 85%; width: 20px; height: 20px; animation-duration: 14s; animation-delay: 3s; opacity: 0.3; background: rgba(239, 83, 80, 0.2); }
+        .heart-shape:nth-child(5)::before, .heart-shape:nth-child(5)::after { width: 20px; height: 20px; }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(45deg) scale(0.8); opacity: 0; }
+            20% { opacity: 0.8; }
+            100% { transform: translateY(-120vh) rotate(45deg) scale(1.2); opacity: 0; }
+        }
+
+        /* --- 3. LAYOUT MANAGERS --- */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            padding: 1rem;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            visibility: hidden;
+        }
+
+        /* --- 4. START SCREEN (Audio Unlock) --- */
+        #screen-start {
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
+        }
+        
+        .btn-start {
+            position: relative;
+            padding: 1rem 2.5rem;
+            font-size: 1.3rem;
+            font-family: var(--font-serif);
+            background: var(--gold-shine);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+            transition: transform 0.2s;
+            overflow: hidden;
+        }
+        .btn-start:active { transform: scale(0.95); }
+
+        /* --- 5. COUNTDOWN SCREEN --- */
+        #countdown-number {
+            font-family: var(--font-serif);
+            font-size: clamp(6rem, 25vw, 15rem);
+            color: var(--primary-gold);
+            font-weight: 700;
+            text-shadow: 2px 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        /* --- 6. GIFT BOX --- */
+        .gift-container {
+            position: relative;
+            width: clamp(200px, 45vw, 320px);
+            height: clamp(200px, 45vw, 320px);
+            cursor: pointer;
+            animation: softBounce 2s infinite ease-in-out;
+        }
+
+        @keyframes softBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-25px); }
+        }
+
+        .box-body {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 80%;
+            background: var(--box-color);
+            border-radius: 10px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .box-lid {
+            position: absolute;
+            top: 5%;
+            left: -5%;
+            width: 110%;
+            height: 20%;
+            background: #ffccbc; /* Same base, slightly lighter via lighting */
+            filter: brightness(1.05);
+            border-radius: 10px;
+            z-index: 2;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 1s ease-in-out, opacity 0.8s;
+        }
+
+        /* Ribbons */
+        .ribbon-vertical {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            width: 18%;
+            height: 100%;
+            background: var(--ribbon-color);
+            border-left: 1px solid rgba(0,0,0,0.05);
+            border-right: 1px solid rgba(0,0,0,0.05);
+        }
+        .ribbon-horizontal {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            width: 100%;
+            height: 18%;
+            background: var(--ribbon-color);
+        }
+
+        /* Bow */
+        .bow {
+            position: absolute;
+            top: -15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40%;
+            height: 30%;
+            z-index: 3;
+            transition: opacity 0.5s;
+        }
+        .bow::before, .bow::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 50%;
+            height: 100%;
+            background: var(--ribbon-color);
+            border-radius: 50% 50% 0 0;
+            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.1);
+        }
+        .bow::before { left: 2%; transform: rotate(-15deg); }
+        .bow::after { right: 2%; transform: rotate(15deg); }
+
+        /* Open Animation State */
+        .gift-container.open { animation: none; }
+        .gift-container.open .box-lid {
+            transform: translateY(-150px) rotate(-15deg);
+            opacity: 0;
+        }
+        .gift-container.open .bow { opacity: 0; }
+
+        .click-hint {
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            color: #888;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+        /* --- 7. CELEBRATION SCREEN --- */
+        #screen-celebration {
+            z-index: 20;
+            text-align: center;
+        }
+
+        h1.bday-text {
+            font-family: var(--font-script);
+            font-size: clamp(3.5rem, 12vw, 8rem);
+            color: #e53935; /* Romantic red text for title */
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.8);
+            margin-bottom: 0.2rem;
+            line-height: 1.2;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        .name-display {
+            font-family: var(--font-serif);
+            font-size: clamp(2rem, 6vw, 4rem);
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .wish-card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: clamp(1.5rem, 4vw, 3rem);
+            border-radius: 15px;
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            box-shadow: 0 15px 35px rgba(239, 83, 80, 0.15); /* Reddish shadow */
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .wish-text {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            line-height: 1.7;
+            color: #5d4037;
+            font-style: italic;
+        }
+
+        /* Confetti Canvas */
+        #confetti-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        /* Animations */
+        .animate-pop { animation: popIn 1s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .animate-slide { animation: slideUp 1s forwards ease-out; }
+        .delay-1 { animation-delay: 0.5s; }
+        .delay-2 { animation-delay: 1.2s; }
+        .delay-3 { animation-delay: 2.0s; }
+
+        @keyframes popIn { to { opacity: 1; transform: scale(1); } }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. LOVE BACKGROUND -->
+    <div class="bg-hearts">
+        <div class="heart-shape"></div>
+        <div class="heart-shape"></div>
+        <div class="heart-shape"></div>
+        <div class="heart-shape"></div>
+        <div class="heart-shape"></div>
+    </div>
+
+    <!-- 2. AUDIO ELEMENTS (Hidden) -->
+    <!-- 
+        Note: Using placeholders. 
+        For production, replace 'src' with your own files.
+    -->
+    <audio id="audio-tick" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZURE" type="audio/ogg">
+    </audio>
+    
+    <audio id="audio-music" preload="auto" loop>
+        <!-- Relaxed, happy instrumental -->
+        <source src="https://cdn.pixabay.com/download/audio/2022/11/22/audio_febc508520.mp3?filename=happy-birthday-124977.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- 3. UX FLOW SCREENS -->
+
+    <!-- Screen 1: Start Button (Browser Policy) -->
+    <div id="screen-start" class="screen">
+        <button class="btn-start" onclick="startExperience()">Tap to Begin</button>
+    </div>
+
+    <!-- Screen 2: Countdown -->
+    <div id="screen-countdown" class="screen hidden">
+        <div id="countdown-number">5</div>
+    </div>
+
+    <!-- Screen 3: Gift Box -->
+    <div id="screen-gift" class="screen hidden">
+        <div class="gift-container" id="gift-box" onclick="openGift()">
+            <div class="bow"></div>
+            <div class="box-lid">
+                <div class="ribbon-vertical"></div>
+                <div class="ribbon-horizontal"></div>
+            </div>
+            <div class="box-body">
+                <div class="ribbon-vertical"></div>
+            </div>
+        </div>
+        <p class="click-hint">A gift for you... Tap to open</p>
+    </div>
+
+    <!-- Screen 4: Celebration -->
+    <div id="screen-celebration" class="screen hidden">
+        <canvas id="confetti-canvas"></canvas>
+        
+        <h1 class="bday-text animate-pop delay-1">Happy Birthday!</h1>
+        <div class="name-display animate-slide delay-2" id="dynamic-name">Lovely Person</div>
+        
+        <div class="wish-card animate-slide delay-3">
+            <p class="wish-text">
+                "To the one who fills the world with love and light. May your day be as beautiful as your heart, and may this year bring you endless joy and unforgettable moments."
+                <br><br>With Love ❤️
+            </p>
+        </div>
+    </div>
+
+    <script>
+        /* --- CONFIGURATION --- */
+        // 1. Get Dynamic Name from URL (?name=Rahim)
+        const params = new URLSearchParams(window.location.search);
+        const userName = params.get("name") || "Lovely Person";
+        document.getElementById('dynamic-name').innerText = userName;
+
+        // 2. DOM Elements
+        const startScreen = document.getElementById('screen-start');
+        const countScreen = document.getElementById('screen-countdown');
+        const giftScreen = document.getElementById('screen-gift');
+        const celebScreen = document.getElementById('screen-celebration');
+        const countDisplay = document.getElementById('countdown-number');
+        const giftBox = document.getElementById('gift-box');
+
+        // 3. Audio Elements
+        const audioTick = document.getElementById('audio-tick');
+        const audioMusic = document.getElementById('audio-music');
+        
+        // Adjust volumes
+        audioTick.volume = 0.7;
+        audioMusic.volume = 0.5;
+
+        /* --- LOGIC FLOW --- */
+
+        // Step 1: User interacts (Unlocks Audio)
+        function startExperience() {
+            // Fade out start screen
+            startScreen.style.opacity = 0;
+            setTimeout(() => {
+                startScreen.classList.add('hidden');
+                countScreen.classList.remove('hidden');
+                runCountdown();
+            }, 500);
+        }
+
+        // Step 2: 5-Second Countdown
+        function runCountdown() {
+            let count = 5;
+            
+            // Immediate tick
+            playTick();
+
+            const timer = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    countDisplay.innerText = count;
+                    // Visual Pulse
+                    countDisplay.style.transform = "scale(1.2)";
+                    setTimeout(() => countDisplay.style.transform = "scale(1)", 200);
+                    playTick();
+                } else {
+                    clearInterval(timer);
+                    countDisplay.innerText = "";
+                    showGift();
+                }
+            }, 1000);
+        }
+
+        function playTick() {
+            audioTick.currentTime = 0;
+            audioTick.play().catch(e => console.warn("Audio blocked", e));
+        }
+
+        // Step 3: Show Gift
+        function showGift() {
+            countScreen.classList.add('hidden');
+            giftScreen.classList.remove('hidden');
+        }
+
+        // Step 4: Open Gift
+        function openGift() {
+            // 1. Animate CSS
+            giftBox.classList.add('open');
+            
+            // 2. Play Music
+            audioMusic.play().catch(e => console.warn("Music blocked", e));
+
+            // 3. Wait for lid animation, then switch screens
+            setTimeout(() => {
+                giftScreen.style.opacity = 0; // Fade out
+                setTimeout(() => {
+                    giftScreen.classList.add('hidden');
+                    celebScreen.classList.remove('hidden');
+                    startConfetti(); // Trigger confetti
+                }, 500);
+            }, 1000);
+        }
+
+        /* --- CONFETTI ENGINE (Vanilla JS) --- */
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        // Resize handling
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Confetti Colors: Gold, Pink, Red, Peach
+        const colors = ['#d4af37', '#ef5350', '#ffccbc', '#fff9c4', '#f8bbd0'];
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height - canvas.height;
+                this.size = Math.random() * 8 + 4;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.speedY = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 2 - 1;
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = Math.random() * 4 - 2;
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                this.rotation += this.rotationSpeed;
+                // Reset if falls off screen
+                if (this.y > canvas.height) {
+                    this.y = -20;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation * Math.PI / 180);
+                ctx.fillStyle = this.color;
+                ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+                ctx.restore();
+            }
+        }
+
+        function startConfetti() {
+            const count = window.innerWidth < 600 ? 80 : 200; // Performance optimization
+            for(let i=0; i<count; i++) particles.push(new Particle());
+            animateConfetti();
+        }
+
+        function animateConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateConfetti);
+        }
+
+    </script>
+</body>
+</html>
